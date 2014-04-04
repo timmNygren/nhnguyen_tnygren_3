@@ -116,16 +116,12 @@ public class DescriptionPanel extends JPanel implements ListSelectionListener {
 		// Create name text field
 		actorName = new JTextField(J_TEXT_FIELD_SIZE);
 		actorName.setEditable(false);
-		actorName.setText("TESTING");
 		// Create the list model
 		this.movieListModel = new DefaultListModel<String>();
 		
 		this.movieList = new JList<String>( this.movieListModel );
 		this.movieList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 		this.movieList.addListSelectionListener( this );
-		
-		this.movieListModel.addElement("One ele");
-		this.movieListModel.addElement("Two ele");
 		
 		// Add components to actorInfo
 		actorInfo.add(actorName, BorderLayout.WEST);
@@ -142,8 +138,9 @@ public class DescriptionPanel extends JPanel implements ListSelectionListener {
 			this.repaint();
 			displayActorInfo(db.getActorDetails(name));
 		} else {
-			System.out.println("DISPLAYING INFO");
-
+			if (actorInfo.isShowing()) {
+				this.remove(actorInfo);
+			}
 			this.add(movieInfo);
 			this.revalidate();
 			this.repaint();
@@ -187,7 +184,6 @@ public class DescriptionPanel extends JPanel implements ListSelectionListener {
 		// Using the third event to determine what is selected from the search list
 		if( !evt.getValueIsAdjusting() && !eventTrigger )
 		{
-			System.out.println("EVENT TRIGGERED");
 			// We are displaying an Actor's info with a movie list
 			if ( evt.getSource() == movieList ) 
 			{
@@ -195,12 +191,7 @@ public class DescriptionPanel extends JPanel implements ListSelectionListener {
 				// Get the name of the movie selected
 				String name = movieList.getSelectedValue();
 				// Remove the actor info panel to replace with the movie info panel
-				this.remove(actorInfo);
-
-//				this.add(movieInfo);
-//				this.revalidate();
-//				this.repaint();
-				
+				this.remove(actorInfo);				
 				// Pass the name of the movie and false for searching by movie
 				displayInfo(name, false);
 				
@@ -212,12 +203,7 @@ public class DescriptionPanel extends JPanel implements ListSelectionListener {
 				// Get the name of the actor selected from the current movie's actor list
 				String name = actorList.getSelectedValue();
 				// Remove the movie info panel to replace with the actor info panel
-				this.remove(movieInfo);
-				
-//				this.add(actorInfo);
-//				this.revalidate();
-//				this.repaint();
-				
+				this.remove(movieInfo);				
 				// Pass the name of the actor and true for displaying actor information
 				displayInfo(name, true);
 			}

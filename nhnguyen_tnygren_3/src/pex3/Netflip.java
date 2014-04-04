@@ -60,6 +60,7 @@ public class Netflip extends JApplet
 		
 		// Create necessary links between panels to communicate
 		searchListPanel.setDescriptionLink(descriptionPanel);
+		searchPanel.setSearchListLink(searchListPanel);
 		
 		add(searchListPanel, BorderLayout.LINE_START);
 		add(searchPanel, BorderLayout.PAGE_START);

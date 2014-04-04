@@ -1,11 +1,5 @@
 package pex3;
 
-/**
- * Demonstration of creating a table via a JDBC/MySQL connection.
- * 
- * @author Randy Bower
- */
-import java.awt.List;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -130,6 +124,42 @@ public class NetflipDatabase
 		}
 		return actorDetails;
 	}
+	
+	public ArrayList<String> normalSearch( String toSearch ) {
+		ArrayList<String> results = new ArrayList<String>();
+		
+		try {
+			String movieListQuery = "SELECT title " + 
+									"FROM film " + 
+									"WHERE film.title LIKE ? " + 
+									"OR film.description LIKE ?";
+		
+			connection = DriverManager.getConnection(DB_CONNECTION_HOST, DB_USER, DB_PASS);
+			statement = connection.prepareStatement(movieListQuery);
+			statement.setString(1, "%" + toSearch + "%");
+			statement.setString(2, "%" + toSearch + "%");
+			resultSet = statement.executeQuery();
+			
+			while(resultSet.next()) {
+				results.add(resultSet.getString("title"));
+			}
+			
+			if (resultSet != null) {
+				resultSet.close();
+			}
+			if (statement != null) {
+				statement.close();
+			}
+			if (connection != null) {
+				connection.close();
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.print("Error with the database");
+		}
+		return results;
+	}
 
 	public ArrayList<String> getAllMovies() {
 
@@ -138,7 +168,7 @@ public class NetflipDatabase
 		try {
 			connection = DriverManager.getConnection(DB_CONNECTION_HOST, DB_USER, DB_PASS);
 			commonStatement = connection.createStatement();
-			resultSet = commonStatement.executeQuery("SELECT title, length, rating FROM film ORDER BY title");
+			resultSet = commonStatement.executeQuery("SELECT title FROM film ORDER BY title");
 
 			while (resultSet.next()) {
 				movieList.add(resultSet.getString("title"));

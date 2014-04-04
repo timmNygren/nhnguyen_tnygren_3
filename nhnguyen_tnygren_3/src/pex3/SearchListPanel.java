@@ -36,6 +36,7 @@ public class SearchListPanel extends JPanel implements ListSelectionListener
 	
 	public void addInitialList() {
 		ArrayList<String> movies = this.db.getAllMovies();
+		this.listModel.clear();
 		for (String movie : movies) {
 			this.listModel.addElement(movie);
 		}
@@ -55,6 +56,18 @@ public class SearchListPanel extends JPanel implements ListSelectionListener
 		if( !evt.getValueIsAdjusting() ){
 			this.descriptionPanel.displayInfo(list.getSelectedValue(), searchByActor);
 		}
+	}
+	
+	public void search( String toSearch ) {
+		ArrayList<String> results = db.normalSearch( toSearch );
+		this.listModel.clear();
+		for ( String result : results ) {
+			this.listModel.addElement(result);
+		}
+	}
+	
+	public void advancedSearch() {
+		System.out.println("IMPLEMENT ME");
 	}
 
 	
