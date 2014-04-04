@@ -11,30 +11,15 @@ package pex3;
  * @author Randy Bower
  */
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JApplet;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-
+import javax.swing.*;
 
 public class Netflip extends JApplet
 {
+	
+	private NetflipDatabase db;
+	
 	// Called when this applet is loaded into the browser.
 	public void init()
 	{
@@ -45,6 +30,7 @@ public class Netflip extends JApplet
 			{
 				public void run()
 				{
+					initDB();
 					createGUI();
 				}
 			} );
@@ -55,27 +41,29 @@ public class Netflip extends JApplet
 			System.err.println( "ERROR: createGUI() did not complete successfully." );
 		}
 	}
-
+	
+	private void initDB() {
+		this.db = new NetflipDatabase();
+	}
+	
 	/**
 	 * Create the GUI. For thread safety, this method should be invoked from the event-dispatching thread.
 	 */
-	private void createGUI()
+	private void createGUI() 
 	{
-		// Create and set up the content pane.
-		SearchPanel spanel = new SearchPanel();
-		NetflipGUI newContentPane = new NetflipGUI();
-		DescriptionPanel dpanel = new DescriptionPanel();
 		
-		setSize(900, 500);
-//		newContentPane.setOpaque( true );
-//		setContentPane( newContentPane );
-		add(newContentPane, BorderLayout.LINE_START);
-		add(spanel, BorderLayout.PAGE_START);
-		add(dpanel, BorderLayout.CENTER);
-
+		// Create and set up the panels.
+		SearchPanel searchPanel = new SearchPanel(db.getAllRatings(), db.getAllCategories());
+		SearchListPanel searchListPanel = new SearchListPanel(db);
+		DescriptionPanel descriptionPanel = new DescriptionPanel(db);
+		setSize(1000, 500);
 		
-		//add(spanel);
+		// Create necessary links between panels to communicate
+		searchListPanel.setDescriptionLink(descriptionPanel);
 		
+		add(searchListPanel, BorderLayout.LINE_START);
+		add(searchPanel, BorderLayout.PAGE_START);
+		add(descriptionPanel, BorderLayout.CENTER);
 	}
 
 	// Some arbitrary data to put into the JList.
