@@ -14,9 +14,11 @@ import java.util.ArrayList;
 
 public class NetflipDatabase
 {
-	private final String DB_CONNECTION_HOST = "jdbc:mysql://localhost:8889/sakila";
+	// localhost:8889 pass "root"
+	// localhost:3306 pass "
+	private final String DB_CONNECTION_HOST = "jdbc:mysql://localhost/sakila";
 	private final String DB_USER = "root";
-	private final String DB_PASS = "root";
+	private final String DB_PASS = "";
 	private Connection connection;
 	private Statement commonStatement;
 	private PreparedStatement statement;
@@ -26,13 +28,6 @@ public class NetflipDatabase
 		this.connection = null;
 		this.statement = null;
 		this.resultSet = null;
-		//		try {
-		//			con = DriverManager.getConnection( DB_CONNECTION_HOST, DB_USER, DB_PASS );
-		//			stmt = con.createStatement();
-		//		} catch (SQLException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
 	}
 
 	public MovieItem getMovieDetails(String movieTitle) {
@@ -89,6 +84,51 @@ public class NetflipDatabase
 			System.err.print("Error has occurred with the Database");
 		}
 		return movieDetails;
+	}
+	
+	public ActorItem getActorDetails(String actor) {
+		ActorItem actorDetails = new ActorItem();
+		ArrayList<String> movies = new ArrayList<String>();
+		String[] firstLastName = actor.split(" ");
+		String firstName = firstLastName[0];
+		String lastName = firstLastName[1];
+		
+		try {
+			String movieListQuery = "SELECT title " + 
+									"FROM film, film_actor, actor " + 
+									"WHERE film.film_id = film_actor.film_id " + 
+									"AND film_actor.actor_id = actor.actor_id " + 
+									"AND actor.first_name = ? " +
+									"AND actor.last_name = ?";
+		
+			connection = DriverManager.getConnection(DB_CONNECTION_HOST, DB_USER, DB_PASS);
+			statement = connection.prepareStatement(movieListQuery);
+			statement.setString(1, firstName);
+			statement.setString(2, lastName);
+			resultSet = statement.executeQuery();
+			
+			while(resultSet.next()) {
+				movies.add(resultSet.getString("title"));
+			}
+			
+			actorDetails.setMovies(movies);
+			actorDetails.setName(actor);
+			
+			if (resultSet != null) {
+				resultSet.close();
+			}
+			if (statement != null) {
+				statement.close();
+			}
+			if (connection != null) {
+				connection.close();
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.print("Error with the database");
+		}
+		return actorDetails;
 	}
 
 	public ArrayList<String> getAllMovies() {
